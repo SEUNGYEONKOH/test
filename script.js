@@ -7,33 +7,37 @@ const raindrops = [];
 const splashes = [];
 const mouse = { x: -100, y: -100 };
 
-// 마우스 움직임 감지
 document.addEventListener("mousemove", (e) => {
   mouse.x = e.clientX;
   mouse.y = e.clientY;
 });
 
-// 오디오 요소 및 제어 요소 가져오기
 const rainAudio = document.getElementById("rain-audio");
-const rainSlider = document.getElementById("rain-slider");
 const soundToggle = document.getElementById("sound-toggle");
+const rainSlider = document.getElementById("rain-slider");
+const soundStartBtn = document.getElementById("sound-start-btn");
 
-let audioInitialized = false;
+soundStartBtn.addEventListener("click", () => {
+  rainAudio.volume = 0.5;
+  rainAudio.loop = true;
+  rainAudio.play().then(() => {
+    console.log("소리 재생 시작됨");
+    soundStartBtn.disabled = true;
+    soundStartBtn.innerText = "🔊 재생 중";
+  }).catch(err => {
+    console.error("재생 실패", err);
+    alert("소리를 재생할 수 없습니다. 브라우저 보안 설정을 확인하세요.");
+  });
+});
 
-// 사용자 첫 클릭 시 오디오 초기화
-function initAudio() {
-  if (!audioInitialized) {
-    rainAudio.volume = 0.5;
-    rainAudio.loop = true;
+soundToggle.addEventListener("change", () => {
+  if (soundToggle.checked) {
     rainAudio.play().catch(() => {});
-    audioInitialized = true;
+  } else {
+    rainAudio.pause();
   }
-}
+});
 
-// 첫 클릭 시 오디오 재생 시작
-document.body.addEventListener("click", initAudio, { once: true });
-
-// 비 클래스
 class Raindrop {
   constructor() {
     this.reset();
@@ -73,7 +77,6 @@ class Raindrop {
   }
 }
 
-// 물방울 스플래시
 class Splash {
   constructor(x, y) {
     this.x = x;
@@ -99,12 +102,10 @@ class Splash {
   }
 }
 
-// 초기 비 생성
 for (let i = 0; i < 150; i++) {
   raindrops.push(new Raindrop());
 }
 
-// 애니메이션 루프
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   raindrops.forEach(drop => {
@@ -128,28 +129,15 @@ function animate() {
 
 animate();
 
-// 윈도우 리사이즈 대응
 window.addEventListener("resize", () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 });
 
-// 슬라이더: 비 양 조절
 rainSlider.addEventListener("input", () => {
-  initAudio();  // 슬라이더 조작 시 오디오 초기화 시도
   const count = parseInt(rainSlider.value);
   raindrops.length = 0;
   for (let i = 0; i < count; i++) {
     raindrops.push(new Raindrop());
-  }
-});
-
-// 체크박스: 소리 켜고 끄기
-soundToggle.addEventListener("change", () => {
-  initAudio();  // 소리 켜기 시 오디오 초기화 시도
-  if (soundToggle.checked) {
-    rainAudio.play().catch(() => {});
-  } else {
-    rainAudio.pause();
   }
 });
