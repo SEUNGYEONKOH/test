@@ -8,8 +8,11 @@
 <body>
   <div class="greeting">고승연의 공간입니다.</div>
   <canvas id="rain-canvas"></canvas>
-  <!-- 비 소리 추가 -->
+
+  <!-- 비 소리 -->
   <audio id="rain-audio" src="https://cdn.pixabay.com/audio/2022/03/08/audio_f03cb7a809.mp3" loop></audio>
+
+  <!-- 컨트롤 패널 -->
   <div class="control-panel">
     <label>
       비 양:
@@ -19,7 +22,9 @@
       소리:
       <input type="checkbox" id="sound-toggle" checked>
     </label>
+    <button id="sound-start-btn">🔊 소리 켜기</button>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
