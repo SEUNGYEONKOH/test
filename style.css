@@ -49,3 +49,19 @@ body {
   margin-bottom: 8px;
   color: #333;
 }
+const rainSlider = document.getElementById("rain-slider");
+const soundToggle = document.getElementById("sound-toggle");
+rainSlider.addEventListener("input", () => {
+  const count = parseInt(rainSlider.value);
+  raindrops.length = 0;
+  for (let i = 0; i < count; i++) {
+    raindrops.push(new Raindrop());
+  }
+});
+soundToggle.addEventListener("change", () => {
+  if (soundToggle.checked) {
+    rainAudio.play();
+  } else {
+    rainAudio.pause();
+  }
+});
