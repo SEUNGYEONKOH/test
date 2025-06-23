@@ -83,6 +83,7 @@ class Splash {
   }
 }
 
+// 초기 비 개수
 for (let i = 0; i < 150; i++) {
   raindrops.push(new Raindrop());
 }
@@ -114,4 +115,24 @@ animate();
 window.addEventListener("resize", () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+});
+
+// 비 양 조절 슬라이더, 소리 토글
+const rainSlider = document.getElementById("rain-slider");
+const soundToggle = document.getElementById("sound-toggle");
+
+rainSlider.addEventListener("input", () => {
+  const count = parseInt(rainSlider.value);
+  raindrops.length = 0;
+  for (let i = 0; i < count; i++) {
+    raindrops.push(new Raindrop());
+  }
+});
+
+soundToggle.addEventListener("change", () => {
+  if (soundToggle.checked) {
+    rainAudio.play();
+  } else {
+    rainAudio.pause();
+  }
 });
