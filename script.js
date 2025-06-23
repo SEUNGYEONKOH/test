@@ -7,17 +7,33 @@ const raindrops = [];
 const splashes = [];
 const mouse = { x: -100, y: -100 };
 
+// 마우스 움직임 감지
 document.addEventListener("mousemove", (e) => {
   mouse.x = e.clientX;
   mouse.y = e.clientY;
 });
 
-// 🎵 비 소리 제어
+// 오디오 요소 및 제어 요소 가져오기
 const rainAudio = document.getElementById("rain-audio");
-document.body.addEventListener("click", () => {
-  rainAudio.play().catch(() => {}); // 사용자가 클릭하면 재생
-}, { once: true });
+const rainSlider = document.getElementById("rain-slider");
+const soundToggle = document.getElementById("sound-toggle");
 
+let audioInitialized = false;
+
+// 사용자 첫 클릭 시 오디오 초기화
+function initAudio() {
+  if (!audioInitialized) {
+    rainAudio.volume = 0.5;
+    rainAudio.loop = true;
+    rainAudio.play().catch(() => {});
+    audioInitialized = true;
+  }
+}
+
+// 첫 클릭 시 오디오 재생 시작
+document.body.addEventListener("click", initAudio, { once: true });
+
+// 비 클래스
 class Raindrop {
   constructor() {
     this.reset();
@@ -43,7 +59,6 @@ class Raindrop {
     }
 
     if (this.y > canvas.height) {
-      // 🌊 스플래시 생성
       splashes.push(new Splash(this.x, canvas.height));
       this.reset();
       this.y = 0;
@@ -58,6 +73,7 @@ class Raindrop {
   }
 }
 
+// 물방울 스플래시
 class Splash {
   constructor(x, y) {
     this.x = x;
@@ -83,11 +99,12 @@ class Splash {
   }
 }
 
-// 초기 비 개수
+// 초기 비 생성
 for (let i = 0; i < 150; i++) {
   raindrops.push(new Raindrop());
 }
 
+// 애니메이션 루프
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   raindrops.forEach(drop => {
@@ -100,7 +117,6 @@ function animate() {
     splash.draw();
   });
 
-  // 오래된 스플래시 제거
   for (let i = splashes.length - 1; i >= 0; i--) {
     if (splashes[i].isDone()) {
       splashes.splice(i, 1);
@@ -112,16 +128,15 @@ function animate() {
 
 animate();
 
+// 윈도우 리사이즈 대응
 window.addEventListener("resize", () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 });
 
-// 비 양 조절 슬라이더, 소리 토글
-const rainSlider = document.getElementById("rain-slider");
-const soundToggle = document.getElementById("sound-toggle");
-
+// 슬라이더: 비 양 조절
 rainSlider.addEventListener("input", () => {
+  initAudio();  // 슬라이더 조작 시 오디오 초기화 시도
   const count = parseInt(rainSlider.value);
   raindrops.length = 0;
   for (let i = 0; i < count; i++) {
@@ -129,9 +144,11 @@ rainSlider.addEventListener("input", () => {
   }
 });
 
+// 체크박스: 소리 켜고 끄기
 soundToggle.addEventListener("change", () => {
+  initAudio();  // 소리 켜기 시 오디오 초기화 시도
   if (soundToggle.checked) {
-    rainAudio.play();
+    rainAudio.play().catch(() => {});
   } else {
     rainAudio.pause();
   }
